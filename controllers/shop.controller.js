@@ -67,8 +67,7 @@ async function getCompany() {
 }
 
 // =======================
-// HOME -> redirige a menú (ANTES)
-// Ahora sí mostramos Home con misión/visión/slogan
+// HOME (landing) -> muestra misión/visión/slogan
 // =======================
 async function home(req, res) {
   try {
@@ -105,20 +104,28 @@ async function menu(req, res) {
 
     ensureCart(req);
 
+    // ✅ IMPORTANTE: mandar WA a la vista
+    const whatsappPhone = String(process.env.WHATSAPP_PHONE || "").trim();
+
     return res.render("shop/menu", {
       title: "Menú - CalentanaCo",
       grouped,
       cartCount: cartCount(req.session.cart),
-      company, // ✅ aquí va misión/visión/slogan
+      company,
+      whatsappPhone,
     });
   } catch (e) {
     console.error("menu error:", e);
     ensureCart(req);
+
+    const whatsappPhone = String(process.env.WHATSAPP_PHONE || "").trim();
+
     return res.render("shop/menu", {
       title: "Menú - CalentanaCo",
       grouped: { aguas: [], botanas: [], antojitos: [], otros: [] },
       cartCount: cartCount(req.session.cart),
       company: null,
+      whatsappPhone,
     });
   }
 }
@@ -133,25 +140,28 @@ async function cart(req, res) {
     ensureCart(req);
     const total = calcCart(req.session.cart);
 
+    const whatsappPhone = String(process.env.WHATSAPP_PHONE || "").trim();
+
     return res.render("shop/cart", {
       title: "Carrito - CalentanaCo",
       cart: req.session.cart,
       total,
-      whatsappPhone: process.env.WHATSAPP_PHONE || "",
+      whatsappPhone,
       error: null,
-      company, // ✅ por si quieres mostrar frase también aquí
+      company,
     });
   } catch (e) {
     console.error("cart error:", e);
 
     ensureCart(req);
     const total = calcCart(req.session.cart);
+    const whatsappPhone = String(process.env.WHATSAPP_PHONE || "").trim();
 
     return res.render("shop/cart", {
       title: "Carrito - CalentanaCo",
       cart: req.session.cart,
       total,
-      whatsappPhone: process.env.WHATSAPP_PHONE || "",
+      whatsappPhone,
       error: null,
       company: null,
     });
@@ -245,7 +255,7 @@ async function checkoutPost(req, res) {
       return res.redirect("/cart");
     }
 
-    const whatsappPhone = process.env.WHATSAPP_PHONE || "";
+    const whatsappPhone = String(process.env.WHATSAPP_PHONE || "").trim();
     if (!whatsappPhone) {
       const total = calcCart(req.session.cart);
       const company = await getCompany();
