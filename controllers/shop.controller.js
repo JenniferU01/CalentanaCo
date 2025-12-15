@@ -1,6 +1,7 @@
 // controllers/shop.controller.js
 const Product = require("../models/Product");
 const Order = require("../models/Order");
+const CompanyInfo = require("../models/CompanyInfo");
 
 function ensureCart(req) {
   if (!req.session.cart) {
@@ -56,50 +57,105 @@ function buildWhatsAppText(order) {
   return lines.join("\n");
 }
 
+// Helper: obtener info de empresa (con defaults si no existe)
+async function getCompany() {
+  let company = await CompanyInfo.findOne();
+  if (!company) {
+    company = await CompanyInfo.create({});
+  }
+  return company;
+}
+
 // =======================
-// HOME -> redirige a menú
+// HOME -> redirige a menú (ANTES)
+// Ahora sí mostramos Home con misión/visión/slogan
 // =======================
 async function home(req, res) {
-  return res.redirect("/menu");
+  try {
+    const company = await getCompany();
+    return res.render("home", {
+      title: "CalentanaCo",
+      company,
+    });
+  } catch (e) {
+    console.error("home error:", e);
+    return res.render("home", {
+      title: "CalentanaCo",
+      company: null,
+    });
+  }
 }
 
 // =======================
 // MENÚ
 // =======================
 async function menu(req, res) {
-  const products = await Product.find({ isActive: true }).sort({ createdAt: -1 });
+  try {
+    const company = await getCompany();
 
-  const grouped = { aguas: [], botanas: [], antojitos: [], otros: [] };
+    const products = await Product.find({ isActive: true }).sort({ createdAt: -1 });
 
-  for (const p of products) {
-    const cat = p.category || "otros";
-    if (!grouped[cat]) grouped[cat] = [];
-    grouped[cat].push(p);
+    const grouped = { aguas: [], botanas: [], antojitos: [], otros: [] };
+
+    for (const p of products) {
+      const cat = p.category || "otros";
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(p);
+    }
+
+    ensureCart(req);
+
+    return res.render("shop/menu", {
+      title: "Menú - CalentanaCo",
+      grouped,
+      cartCount: cartCount(req.session.cart),
+      company, // ✅ aquí va misión/visión/slogan
+    });
+  } catch (e) {
+    console.error("menu error:", e);
+    ensureCart(req);
+    return res.render("shop/menu", {
+      title: "Menú - CalentanaCo",
+      grouped: { aguas: [], botanas: [], antojitos: [], otros: [] },
+      cartCount: cartCount(req.session.cart),
+      company: null,
+    });
   }
-
-  ensureCart(req);
-
-  return res.render("shop/menu", {
-    title: "Menú - CalentanaCo",
-    grouped,
-    cartCount: cartCount(req.session.cart),
-  });
 }
 
 // =======================
 // CARRITO
 // =======================
 async function cart(req, res) {
-  ensureCart(req);
-  const total = calcCart(req.session.cart);
+  try {
+    const company = await getCompany();
 
-  return res.render("shop/cart", {
-    title: "Carrito - CalentanaCo",
-    cart: req.session.cart,
-    total,
-    whatsappPhone: process.env.WHATSAPP_PHONE || "",
-    error: null,
-  });
+    ensureCart(req);
+    const total = calcCart(req.session.cart);
+
+    return res.render("shop/cart", {
+      title: "Carrito - CalentanaCo",
+      cart: req.session.cart,
+      total,
+      whatsappPhone: process.env.WHATSAPP_PHONE || "",
+      error: null,
+      company, // ✅ por si quieres mostrar frase también aquí
+    });
+  } catch (e) {
+    console.error("cart error:", e);
+
+    ensureCart(req);
+    const total = calcCart(req.session.cart);
+
+    return res.render("shop/cart", {
+      title: "Carrito - CalentanaCo",
+      cart: req.session.cart,
+      total,
+      whatsappPhone: process.env.WHATSAPP_PHONE || "",
+      error: null,
+      company: null,
+    });
+  }
 }
 
 // =======================
@@ -192,12 +248,15 @@ async function checkoutPost(req, res) {
     const whatsappPhone = process.env.WHATSAPP_PHONE || "";
     if (!whatsappPhone) {
       const total = calcCart(req.session.cart);
+      const company = await getCompany();
+
       return res.render("shop/cart", {
         title: "Carrito - CalentanaCo",
         cart: req.session.cart,
         total,
         whatsappPhone: "",
         error: "❌ Aún no está configurado el número de WhatsApp del negocio.",
+        company,
       });
     }
 
@@ -217,12 +276,15 @@ async function checkoutPost(req, res) {
     // Validaciones mínimas
     if (deliveryMethod === "domicilio" && !addressText && !mapsUrl) {
       const total = calcCart(req.session.cart);
+      const company = await getCompany();
+
       return res.render("shop/cart", {
         title: "Carrito - CalentanaCo",
         cart: req.session.cart,
         total,
         whatsappPhone,
         error: "❌ Para entrega a domicilio agrega dirección/referencias o un link de Google Maps.",
+        company,
       });
     }
 

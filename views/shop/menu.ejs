@@ -31,6 +31,27 @@
     <p class="note">Agrega al carrito y elige tamaño cuando aplique (aguas).</p>
   </section>
 
+  <!-- ✅ MISIÓN / VISIÓN / FRASE -->
+  <% if (company && (company.slogan || company.mission || company.vision)) { %>
+    <section class="hero section-space">
+      <% if (company.slogan) { %>
+        <h3 style="margin-bottom: 8px;"><%= company.slogan %></h3>
+      <% } %>
+
+      <% if (company.mission) { %>
+        <p class="note" style="margin-top: 10px;">
+          <strong>Misión:</strong> <%= company.mission %>
+        </p>
+      <% } %>
+
+      <% if (company.vision) { %>
+        <p class="note" style="margin-top: 10px;">
+          <strong>Visión:</strong> <%= company.vision %>
+        </p>
+      <% } %>
+    </section>
+  <% } %>
+
   <% 
     const order = ["aguas", "botanas", "antojitos", "otros"];
     const labels = {
