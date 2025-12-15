@@ -131,6 +131,10 @@ body {
   margin-top: 24px;
 }
 
+.section-space h3 {
+  margin-bottom: 8px;
+}
+
 .hero h2 {
   margin-bottom: 12px;
   font-size: 1.4rem;
@@ -922,7 +926,7 @@ body {
   flex-wrap: wrap;
 }
 
-/* Responsive */
+/* Responsive dashboard */
 @media (max-width: 900px) {
   .dash-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -930,4 +934,38 @@ body {
   .dash-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* =====================================================
+   ✅ BOTÓN FLOTANTE WHATSAPP
+===================================================== */
+.wa-float {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 12px 14px;
+  border-radius: 999px;
+
+  background: #25d366;
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.wa-float:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.95);
+}
+
+.wa-float:active {
+  transform: translateY(0px);
 }

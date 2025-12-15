@@ -31,28 +31,48 @@
     <p class="note">Agrega al carrito y elige tamaño cuando aplique (aguas).</p>
   </section>
 
+  <%
+    // ✅ WhatsApp phone (si existe en .env, mostramos botón flotante)
+    const waPhone = String(process.env.WHATSAPP_PHONE || "").trim();
+
+    // ✅ Company info (si no llega 'company', usamos defaults seguros)
+    const companySafe = company || {
+      slogan: "El sabor que te abraza, la frescura que te inspira.",
+      mission:
+        "Llevar a cada persona el auténtico sabor calentano a través de aguas frescas, botanas y antojitos elaborados con calidad, tradición y cariño; ofreciendo una experiencia cercana, rápida y accesible para todos.",
+      vision:
+        "Convertirnos en la marca líder de aguas frescas y botanas en la región, reconocida por su sabor incomparable, su servicio humano y cercano, y por la innovación constante en la experiencia del cliente tanto en tienda como en plataformas digitales."
+    };
+  %>
+
   <!-- ✅ MISIÓN / VISIÓN / FRASE -->
-  <% if (company && (company.slogan || company.mission || company.vision)) { %>
-    <section class="hero section-space">
-      <% if (company.slogan) { %>
-        <h3 style="margin-bottom: 8px;"><%= company.slogan %></h3>
-      <% } %>
+  <section class="hero section-space">
+    <h3><%= companySafe.slogan %></h3>
 
-      <% if (company.mission) { %>
-        <p class="note" style="margin-top: 10px;">
-          <strong>Misión:</strong> <%= company.mission %>
-        </p>
-      <% } %>
+    <p class="menu-desc">
+      <strong>Misión:</strong> <%= companySafe.mission %>
+    </p>
 
-      <% if (company.vision) { %>
-        <p class="note" style="margin-top: 10px;">
-          <strong>Visión:</strong> <%= company.vision %>
-        </p>
-      <% } %>
-    </section>
-  <% } %>
+    <p class="menu-desc">
+      <strong>Visión:</strong> <%= companySafe.vision %>
+    </p>
+  </section>
 
-  <% 
+  <!-- ✅ HORARIOS -->
+  <section class="hero section-space">
+    <h3>🕒 Horarios de atención</h3>
+
+    <p class="menu-desc">
+      Lunes a Domingo<br/>
+      <strong>08:00 am – 13:00 pm</strong>
+    </p>
+
+    <p class="menu-desc">
+      Pedidos fuera de este horario se atenderán al siguiente día.
+    </p>
+  </section>
+
+  <%
     const order = ["aguas", "botanas", "antojitos", "otros"];
     const labels = {
       aguas: "Aguas frescas",
@@ -97,7 +117,6 @@
                   <p class="menu-desc"><%= product.description %></p>
                 <% } %>
 
-                <!-- FORM AGREGAR AL CARRITO -->
                 <form action="/cart/add" method="POST" class="menu-form">
                   <input type="hidden" name="productId" value="<%= product._id %>">
 
@@ -106,7 +125,9 @@
                       Tamaño:
                       <select name="sizeLabel" class="menu-select" required>
                         <% product.sizes.forEach(s => { %>
-                          <option value="<%= s.label %>"><%= s.label %> — $<%= Number(s.price).toFixed(2) %></option>
+                          <option value="<%= s.label %>">
+                            <%= s.label %> — $<%= Number(s.price).toFixed(2) %>
+                          </option>
                         <% }) %>
                       </select>
                     </label>
@@ -132,6 +153,20 @@
 <footer class="footer">
   <p>© <%= new Date().getFullYear() %> CalentanaCo</p>
 </footer>
+
+<!-- ✅ BOTÓN FLOTANTE WHATSAPP -->
+<% if (waPhone) { %>
+  <a
+    class="wa-float"
+    href="https://wa.me/<%= waPhone %>"
+    target="_blank"
+    rel="noopener"
+    aria-label="Contactar por WhatsApp"
+    title="Escríbenos por WhatsApp"
+  >
+    💬 WhatsApp
+  </a>
+<% } %>
 
 </body>
 </html>
