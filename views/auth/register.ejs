@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="logo">
+        <img src="/img/logo-calentanaco.png" alt="CalentanaCo" class="logo-img" />
+        <span>CalentanaCo</span>
+      </h1>
+      <nav class="nav">
+        <a href="/" class="nav-link">Inicio</a>
+        <a href="/login" class="nav-link">Iniciar sesión</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <h2>Crear cuenta de cliente</h2>
+      <p>Regístrate para hacer pedidos y ver tu historial más adelante.</p>
+
+      <% if (error) { %>
+        <p class="error"><%= error %></p>
+      <% } %>
+
+      <form action="/register" method="POST" class="form-auth">
+        <label>
+          Nombre completo
+          <input type="text" name="name" required />
+        </label>
+
+        <label>
+          Correo electrónico
+          <input type="email" name="email" required />
+        </label>
+
+        <label>
+          Contraseña
+          <input type="password" name="password" required minlength="6" />
+        </label>
+
+        <label>
+          Confirmar contraseña
+          <input type="password" name="confirmPassword" required minlength="6" />
+        </label>
+
+        <button type="submit" class="btn-primary">Registrarme</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> CalentanaCo · Sistema en desarrollo</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

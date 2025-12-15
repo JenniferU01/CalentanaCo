@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="logo">
+        <img src="/img/logo-calentanaco.png" alt="CalentanaCo" class="logo-img" />
+        <span>CalentanaCo · Admin</span>
+      </h1>
+
+      <nav class="nav">
+        <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+        <a href="/admin/company" class="nav-link">Empresa</a>
+        <a href="/admin/products" class="nav-link active">Productos</a>
+        <a href="/" class="nav-link">Ver sitio</a>
+        <a href="/logout" class="nav-link nav-admin">Salir</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <div class="admin-topbar">
+        <h2 style="margin:0;">Productos</h2>
+        <a class="btn-primary" href="/admin/products/new">+ Agregar producto</a>
+      </div>
+
+      <% if (error) { %>
+        <div class="error"><%= error %></div>
+      <% } %>
+
+      <% if (success) { %>
+        <div class="success"><%= success %></div>
+      <% } %>
+
+      <% if (!products || products.length === 0) { %>
+        <p class="note" style="margin-top: 12px;">
+          Aún no hay productos. Da clic en <strong>“Agregar producto”</strong>.
+        </p>
+      <% } %>
+
+      <div class="products-grid">
+        <% (products || []).forEach(product => { %>
+
+          <%
+            // Imagen: primero imageUrl, luego image local
+            let imgSrc = "";
+            if (product.imageUrl && String(product.imageUrl).trim() !== "") {
+              imgSrc = product.imageUrl;
+            } else if (product.image && String(product.image).trim() !== "") {
+              imgSrc = "/img/products/" + product.image;
+            }
+
+            const isInactive = !product.isActive;
+          %>
+
+          <article class="product-card <%= isInactive ? 'is-inactive' : '' %>">
+            <div class="product-image-wrapper">
+              <% if (imgSrc) { %>
+                <img class="product-image" src="<%= imgSrc %>" alt="<%= product.name %>" />
+              <% } else { %>
+                <div class="no-image">Sin imagen</div>
+              <% } %>
+
+              <% if (isInactive) { %>
+                <span class="badge-inactive">INACTIVO</span>
+              <% } %>
+            </div>
+
+            <div class="product-body">
+              <div class="product-head">
+                <div>
+                  <h3 class="product-title"><%= product.name %></h3>
+                  <p class="product-category">
+                    <strong>Categoría:</strong>
+                    <%= product.category === "aguas" ? "Aguas frescas" : (product.category || "—") %>
+                  </p>
+                </div>
+
+                <div class="product-actions">
+                  <a class="btn-secondary" href="/admin/products/<%= product._id %>/edit">
+                    Editar
+                  </a>
+
+                  <form action="/admin/products/<%= product._id %>/toggle" method="POST" style="display:inline;">
+                    <button class="btn-secondary" type="submit">
+                      <%= product.isActive ? "Desactivar" : "Activar" %>
+                    </button>
+                  </form>
+
+                  <form
+                    action="/admin/products/<%= product._id %>/delete"
+                    method="POST"
+                    style="display:inline;"
+                    onsubmit="return confirm('¿Seguro que quieres ELIMINAR este producto? Esta acción no se puede deshacer.');"
+                  >
+                    <button class="btn-danger" type="submit">Eliminar</button>
+                  </form>
+                </div>
+              </div>
+
+              <% if (product.sizes && product.sizes.length > 0) { %>
+                <div class="product-prices">
+                  <strong>Precios:</strong>
+                  <ul>
+                    <% product.sizes.forEach(s => { %>
+                      <li>
+                        <%= s.label %> — <strong>$<%= Number(s.price).toFixed(2) %></strong>
+                      </li>
+                    <% }) %>
+                  </ul>
+                </div>
+              <% } %>
+
+              <% if (product.description) { %>
+                <p class="product-desc"><%= product.description %></p>
+              <% } %>
+            </div>
+          </article>
+
+        <% }) %>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> CalentanaCo · Panel administrativo</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

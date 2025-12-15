@@ -1,0 +1,933 @@
+/* =====================================================
+   RESET BÁSICO
+===================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f5f5;
+  color: #222;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header {
+  background: #111;
+  color: #fff;
+  padding: 10px 0;
+}
+
+.header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.logo-img {
+  height: 32px;
+  width: auto;
+  border-radius: 6px;
+  object-fit: contain;
+  background: #fff;
+  padding: 3px;
+}
+
+.nav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.nav-link {
+  color: #ddd;
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.nav-link:hover {
+  background: #222;
+  color: #fff;
+}
+
+.nav-link.active {
+  background: #fff;
+  color: #000;
+}
+
+.nav-admin {
+  border-color: #ffdd57;
+}
+
+/* Carrito badge (parte pública) */
+.nav-cart {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cart-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: #fff;
+  color: #111;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.main {
+  max-width: 960px;
+  margin: 32px auto;
+  padding: 0 16px 40px;
+}
+
+/* =====================================================
+   HERO / SECCIONES
+===================================================== */
+
+.hero {
+  background: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.section-space {
+  margin-top: 24px;
+}
+
+.hero h2 {
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+}
+
+.hero p {
+  margin-bottom: 10px;
+  line-height: 1.45;
+}
+
+/* =====================================================
+   BOTONES
+===================================================== */
+
+.btn-primary {
+  display: inline-block;
+  padding: 10px 18px;
+  background: #111;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  border: 1px solid #111;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.btn-primary:hover {
+  background: #333;
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-secondary {
+  display: inline-block;
+  padding: 8px 12px;
+  background: #fff;
+  color: #111;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: #f3f3f3;
+  border-color: #cfcfcf;
+}
+
+.btn-danger {
+  display: inline-block;
+  padding: 8px 12px;
+  background: #b00020;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  border: 1px solid #b00020;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.05s ease;
+}
+
+.btn-danger:hover {
+  filter: brightness(0.95);
+}
+
+.btn-danger:active {
+  transform: translateY(1px);
+}
+
+/* Botón a ancho completo (menú público) */
+.btn-full {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* =====================================================
+   GRID / CARDS (GENÉRICO)
+===================================================== */
+
+.grid-two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.card {
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid #e5e5e5;
+}
+
+.card h3 {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+/* =====================================================
+   SLOGAN
+===================================================== */
+
+.slogan {
+  margin-top: 18px;
+  text-align: center;
+}
+
+.slogan-text {
+  font-style: italic;
+  font-weight: 600;
+  color: #444;
+}
+
+.note {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* =====================================================
+   FORMULARIOS (LOGIN / REGISTER / ADMIN / CHECKOUT)
+===================================================== */
+
+.form-auth {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.form-auth label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.95rem;
+}
+
+.form-auth input,
+.form-auth textarea,
+.form-auth select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.form-auth input:focus,
+.form-auth textarea:focus,
+.form-auth select:focus {
+  border-color: #888;
+}
+
+.form-auth textarea {
+  resize: vertical;
+}
+
+/* Select del menú público */
+.menu-select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.menu-select:focus {
+  border-color: #888;
+}
+
+/* =====================================================
+   MENSAJES
+===================================================== */
+
+.error {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  color: #b00020;
+  font-size: 0.92rem;
+}
+
+.success {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  color: #0a7b1f;
+  font-size: 0.92rem;
+}
+
+/* =====================================================
+   ADMIN: TOPBAR (Productos)
+===================================================== */
+
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* =====================================================
+   PRODUCTOS (ADMIN): GRID + CARD PROFESIONAL
+===================================================== */
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.product-card {
+  background: #fafafa;
+  border: 1px solid #e7e7e7;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.product-card.is-inactive {
+  opacity: 0.70;
+}
+
+.product-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.no-image {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.badge-inactive {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+
+.product-body {
+  padding: 14px 14px 16px;
+  background: #fff;
+}
+
+.product-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.product-title {
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.product-category {
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.product-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.product-prices {
+  margin-top: 10px;
+  font-size: 0.92rem;
+}
+
+.product-prices ul {
+  margin-top: 6px;
+  margin-left: 16px;
+  line-height: 1.5;
+}
+
+.product-desc {
+  margin-top: 10px;
+  font-size: 0.92rem;
+  color: #333;
+  line-height: 1.45;
+}
+
+/* =====================================================
+   MENÚ (PÚBLICO)
+===================================================== */
+
+.menu-title {
+  font-size: 1.15rem;
+  margin-bottom: 12px;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.menu-card {
+  background: #fff;
+  border: 1px solid #e7e7e7;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.menu-imgwrap {
+  width: 100%;
+  height: 200px;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+
+.menu-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.menu-body {
+  padding: 14px 14px 16px;
+}
+
+.menu-name {
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+
+.menu-desc {
+  font-size: 0.92rem;
+  color: #333;
+  line-height: 1.45;
+  margin-top: 6px;
+}
+
+.menu-form {
+  margin-top: 10px;
+}
+
+.menu-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.92rem;
+}
+
+/* =====================================================
+   CARRITO (PÚBLICO)
+===================================================== */
+
+.inline-form {
+  display: inline;
+}
+
+.cart-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 14px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.cart-imgwrap {
+  width: 100%;
+  height: 140px;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+
+.cart-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cart-body {
+  padding: 12px 12px 14px;
+}
+
+.cart-name {
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+
+.cart-meta {
+  font-size: 0.92rem;
+  color: #444;
+  margin-top: 4px;
+}
+
+.cart-subtotal {
+  margin-top: 8px;
+}
+
+.cart-summary {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cart-total {
+  font-size: 1.05rem;
+}
+
+.cart-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* =====================================================
+   TABLAS (ADMIN PEDIDOS)
+===================================================== */
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  background: #fff;
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  font-size: 0.92rem;
+}
+
+.table th {
+  background: #fafafa;
+  font-weight: 700;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.85rem;
+}
+
+.muted {
+  color: #666;
+}
+
+/* =====================================================
+   STATUS PILL (ADMIN PEDIDOS)
+===================================================== */
+
+.status-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid #ddd;
+  background: #f3f3f3;
+  color: #222;
+}
+
+.status-nuevo {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+.status-en_proceso {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.status-listo {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.status-entregado {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.status-cancelado {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+/* =====================================================
+   ADMIN PEDIDOS: FILTROS + ACCIONES
+===================================================== */
+
+.orders-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.filter-btn.is-active {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.order-detail-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.footer {
+  text-align: center;
+  padding: 16px;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+/* =====================================================
+   PRINT (Comanda)
+===================================================== */
+
+@media print {
+  .header, .footer, .order-detail-actions, .nav {
+    display: none !important;
+  }
+  .main {
+    margin: 0;
+    padding: 0;
+    max-width: none;
+  }
+  .hero {
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .btn-primary, .btn-secondary, .btn-danger {
+    display: none !important;
+  }
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 800px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-item {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-imgwrap {
+    height: 220px;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .grid-two {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 18px;
+  }
+
+  .admin-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .product-image-wrapper {
+    height: 200px;
+  }
+}
+
+/* =====================================================
+   DASHBOARD (ADMIN)
+===================================================== */
+
+.dash-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+  margin-bottom: 16px;
+}
+
+.dash-card {
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid #e7e7e7;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.dash-label {
+  font-size: 0.9rem;
+  color: #444;
+  font-weight: 700;
+}
+
+.dash-value {
+  font-size: 1.7rem;
+  font-weight: 900;
+  margin-top: 8px;
+}
+
+.dash-hint {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.dash-panel {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.dash-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.dash-toplist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dash-topitem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.dash-rank {
+  width: 42px;
+  text-align: center;
+  font-weight: 900;
+  color: #111;
+}
+
+.dash-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f0f0f0;
+  border: 1px solid #e7e7e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dash-img-ph {
+  font-size: 0.75rem;
+  color: #777;
+  font-weight: 800;
+}
+
+.dash-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-title {
+  font-weight: 900;
+  color: #111;
+}
+
+.dash-meta {
+  margin-top: 2px;
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.35;
+}
+
+.dash-statuslist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dash-statusrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+/* Utilidad: fila con separación */
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .dash-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dash-grid {
+    grid-template-columns: 1fr;
+  }
+}

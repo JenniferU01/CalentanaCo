@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <h1 class="logo">
+      <img src="/img/logo-calentanaco.png" class="logo-img" alt="CalentanaCo">
+      <span>CalentanaCo</span>
+    </h1>
+
+    <nav class="nav">
+      <a href="/menu" class="nav-link active">Menú</a>
+      <a href="/cart" class="nav-link nav-cart">
+        Carrito
+        <span class="cart-badge"><%= cartCount || 0 %></span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <section class="hero">
+    <h2>Menú</h2>
+    <p class="note">Agrega al carrito y elige tamaño cuando aplique (aguas).</p>
+  </section>
+
+  <% 
+    const order = ["aguas", "botanas", "antojitos", "otros"];
+    const labels = {
+      aguas: "Aguas frescas",
+      botanas: "Botanas",
+      antojitos: "Antojitos",
+      otros: "Otros"
+    };
+  %>
+
+  <% order.forEach(cat => { %>
+    <% const list = grouped && grouped[cat] ? grouped[cat] : []; %>
+    <% if (list.length > 0) { %>
+
+      <section class="hero section-space">
+        <h3 class="menu-title"><%= labels[cat] %></h3>
+
+        <div class="menu-grid">
+          <% list.forEach(product => { %>
+
+            <%
+              let imgSrc = "";
+              if (product.imageUrl && String(product.imageUrl).trim() !== "") {
+                imgSrc = product.imageUrl;
+              } else if (product.image && String(product.image).trim() !== "") {
+                imgSrc = "/img/products/" + product.image;
+              }
+            %>
+
+            <article class="menu-card">
+              <div class="menu-imgwrap">
+                <% if (imgSrc) { %>
+                  <img class="menu-img" src="<%= imgSrc %>" alt="<%= product.name %>">
+                <% } else { %>
+                  <div class="no-image">Sin imagen</div>
+                <% } %>
+              </div>
+
+              <div class="menu-body">
+                <h4 class="menu-name"><%= product.name %></h4>
+
+                <% if (product.description) { %>
+                  <p class="menu-desc"><%= product.description %></p>
+                <% } %>
+
+                <!-- FORM AGREGAR AL CARRITO -->
+                <form action="/cart/add" method="POST" class="menu-form">
+                  <input type="hidden" name="productId" value="<%= product._id %>">
+
+                  <% if (product.sizes && product.sizes.length > 0) { %>
+                    <label class="menu-label">
+                      Tamaño:
+                      <select name="sizeLabel" class="menu-select" required>
+                        <% product.sizes.forEach(s => { %>
+                          <option value="<%= s.label %>"><%= s.label %> — $<%= Number(s.price).toFixed(2) %></option>
+                        <% }) %>
+                      </select>
+                    </label>
+                  <% } else { %>
+                    <input type="hidden" name="sizeLabel" value="">
+                  <% } %>
+
+                  <button type="submit" class="btn-primary btn-full">Agregar al carrito</button>
+                </form>
+
+              </div>
+            </article>
+
+          <% }) %>
+        </div>
+      </section>
+
+    <% } %>
+  <% }) %>
+
+</main>
+
+<footer class="footer">
+  <p>© <%= new Date().getFullYear() %> CalentanaCo</p>
+</footer>
+
+</body>
+</html>

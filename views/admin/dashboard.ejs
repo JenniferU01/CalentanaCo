@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* Solo estilos del dashboard (no toco tu main.css) */
+    .dash-wrap{max-width:1100px;margin:0 auto;padding:18px}
+    .dash-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .dash-title{margin:0;font-size:22px}
+    .dash-badge{background:#e11d48;color:#fff;border-radius:999px;padding:6px 10px;font-weight:800;display:inline-flex;gap:8px;align-items:center}
+    .dash-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .dash-card{background:#fff;border-radius:14px;padding:14px;box-shadow:0 8px 20px rgba(0,0,0,.06)}
+    .dash-card h3{margin:0 0 6px;font-size:14px;color:#444}
+    .dash-big{font-size:26px;font-weight:800}
+    .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .dash-panel{background:#fff;border-radius:14px;padding:14px;box-shadow:0 8px 20px rgba(0,0,0,.06)}
+    .dash-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .dash-btns{display:flex;gap:8px;flex-wrap:wrap}
+    .dash-btn{border:0;border-radius:10px;padding:8px 10px;cursor:pointer;font-weight:800;background:#e5e7eb}
+    .dash-btn.active{background:#111;color:#fff}
+    @media(max-width:900px){.dash-cards{grid-template-columns:1fr}.dash-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="logo">
+        <img src="/img/logo-calentanaco.png" alt="CalentanaCo" class="logo-img" />
+        <span>CalentanaCo · Admin</span>
+      </h1>
+
+      <nav class="nav">
+        <a href="/admin/dashboard" class="nav-link active">Dashboard</a>
+        <a href="/admin/company" class="nav-link">Empresa</a>
+        <a href="/admin/products" class="nav-link">Productos</a>
+
+        <!-- ✅ Pedidos con badge rojo -->
+        <a href="/admin/orders" class="nav-link" style="position:relative;">
+          Pedidos
+          <span
+            id="navNewBadge"
+            style="
+              display:none;
+              position:absolute;
+              top:-6px;
+              right:-10px;
+              background:#e11d48;
+              color:#fff;
+              border-radius:999px;
+              padding:2px 7px;
+              font-size:12px;
+              font-weight:800;
+              line-height:1;
+            "
+          >0</span>
+        </a>
+
+        <a href="/" class="nav-link">Ver sitio</a>
+        <a href="/logout" class="nav-link nav-admin">Salir</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <div class="dash-wrap">
+
+        <div class="dash-top">
+          <h2 class="dash-title">Dashboard PRO</h2>
+          <div id="newBadgeTop" class="dash-badge" style="display:none;">
+            🔴 Pedidos nuevos: <span id="newCountTop">0</span>
+          </div>
+        </div>
+
+        <div class="dash-cards">
+          <div class="dash-card">
+            <h3>Ventas (periodo seleccionado)</h3>
+            <div class="dash-big" id="salesTotal">$0</div>
+          </div>
+
+          <div class="dash-card">
+            <h3>Órdenes (periodo seleccionado)</h3>
+            <div class="dash-big" id="ordersTotal">0</div>
+          </div>
+
+          <div class="dash-card">
+            <h3>Modo</h3>
+            <div class="dash-btns">
+              <button id="btnDay" class="dash-btn">Día</button>
+              <button id="btnMonth" class="dash-btn active">Mes</button>
+              <button id="btnYear" class="dash-btn">Año</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-grid">
+          <div class="dash-panel">
+            <div class="dash-row">
+              <h3 style="margin:0">Pedidos por estado</h3>
+            </div>
+            <canvas id="chartStatus" height="140"></canvas>
+          </div>
+
+          <div class="dash-panel">
+            <div class="dash-row">
+              <h3 style="margin:0">Ventas (día / mes / año)</h3>
+            </div>
+            <canvas id="chartSales" height="140"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <%= new Date().getFullYear() %> CalentanaCo · Panel administrativo</p>
+  </footer>
+
+  <script>
+    const API = "/api/dashboard";
+    let statusChart, salesChart;
+    let currentGroup = "month";
+
+    function money(n){
+      return new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN"}).format(n || 0);
+    }
+
+    async function fetchJSON(url){
+      const r = await fetch(url);
+      if(!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }
+
+    async function loadNewBadges(){
+      const { total } = await fetchJSON(`${API}/count-new`);
+
+      // badge en navbar
+      const navBadge = document.getElementById("navNewBadge");
+      if(navBadge){
+        navBadge.textContent = total || 0;
+        navBadge.style.display = (total > 0) ? "inline-block" : "none";
+      }
+
+      // badge grande arriba
+      const topBadge = document.getElementById("newBadgeTop");
+      const topCount = document.getElementById("newCountTop");
+      if(topBadge && topCount){
+        topCount.textContent = total || 0;
+        topBadge.style.display = (total > 0) ? "inline-flex" : "none";
+      }
+    }
+
+    async function loadOrdersByStatus(){
+      const data = await fetchJSON(`${API}/orders-by-status`);
+      const labels = data.map(x => x.status);
+      const values = data.map(x => x.total);
+
+      const ctx = document.getElementById("chartStatus").getContext("2d");
+      if(statusChart) statusChart.destroy();
+      statusChart = new Chart(ctx, {
+        type: "bar",
+        data: { labels, datasets: [{ label: "Pedidos", data: values }] },
+        options: { responsive:true, plugins:{ legend:{ display:false } } }
+      });
+    }
+
+    async function loadSales(group){
+      const res = await fetchJSON(`${API}/sales?group=${group}`);
+      const labels = res.data.map(x => x.label);
+      const values = res.data.map(x => x.total);
+      const orders = res.data.map(x => x.orders);
+
+      const totalSales = values.reduce((a,b)=>a+b,0);
+      const totalOrders = orders.reduce((a,b)=>a+b,0);
+
+      document.getElementById("salesTotal").textContent = money(totalSales);
+      document.getElementById("ordersTotal").textContent = totalOrders;
+
+      const ctx = document.getElementById("chartSales").getContext("2d");
+      if(salesChart) salesChart.destroy();
+      salesChart = new Chart(ctx, {
+        type: "line",
+        data: { labels, datasets: [{ label: "Ventas", data: values }] },
+        options: { responsive:true }
+      });
+    }
+
+    function setActive(group){
+      currentGroup = group;
+      document.getElementById("btnDay").classList.toggle("active", group==="day");
+      document.getElementById("btnMonth").classList.toggle("active", group==="month");
+      document.getElementById("btnYear").classList.toggle("active", group==="year");
+      loadSales(group);
+    }
+
+    document.getElementById("btnDay").onclick = ()=>setActive("day");
+    document.getElementById("btnMonth").onclick = ()=>setActive("month");
+    document.getElementById("btnYear").onclick = ()=>setActive("year");
+
+    (async function(){
+      await loadNewBadges();
+      await loadOrdersByStatus();
+      await loadSales(currentGroup);
+
+      // refresco badge cada 10s
+      setInterval(loadNewBadges, 10000);
+    })();
+  </script>
+</body>
+</html>

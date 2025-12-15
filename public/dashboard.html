@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard PRO</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body{font-family:system-ui;margin:0;background:#f5f5f5;color:#111}
+    .wrap{max-width:1100px;margin:0 auto;padding:18px}
+    .top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .badge{background:#e11d48;color:#fff;border-radius:999px;padding:6px 10px;font-weight:700;display:inline-flex;gap:8px;align-items:center}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .card{background:#fff;border-radius:14px;padding:14px;box-shadow:0 8px 20px rgba(0,0,0,.06)}
+    .card h3{margin:0 0 6px;font-size:14px;color:#444}
+    .card .big{font-size:26px;font-weight:800}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .panel{background:#fff;border-radius:14px;padding:14px;box-shadow:0 8px 20px rgba(0,0,0,.06)}
+    .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+    .btns{display:flex;gap:8px}
+    button{border:0;border-radius:10px;padding:8px 10px;cursor:pointer;font-weight:700}
+    button.active{background:#111;color:#fff}
+    button:not(.active){background:#e5e7eb}
+    @media(max-width:900px){.cards{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <h1 style="margin:0">Dashboard PRO</h1>
+      <div id="newBadge" class="badge" style="display:none;">🔴 Pedidos nuevos: <span id="newCount">0</span></div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Ventas (periodo seleccionado)</h3>
+        <div class="big" id="salesTotal">$0</div>
+      </div>
+      <div class="card">
+        <h3>Órdenes (periodo seleccionado)</h3>
+        <div class="big" id="ordersTotal">0</div>
+      </div>
+      <div class="card">
+        <h3>Modo</h3>
+        <div class="btns">
+          <button id="btnDay">Día</button>
+          <button id="btnMonth" class="active">Mes</button>
+          <button id="btnYear">Año</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="row">
+          <h2 style="margin:0;font-size:16px">Pedidos por estado</h2>
+        </div>
+        <canvas id="chartStatus" height="140"></canvas>
+      </div>
+
+      <div class="panel">
+        <div class="row">
+          <h2 style="margin:0;font-size:16px">Ventas (día / mes / año)</h2>
+        </div>
+        <canvas id="chartSales" height="140"></canvas>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const API = "/api/dashboard";
+
+  let statusChart, salesChart;
+  let currentGroup = "month";
+
+  function money(n){
+    return new Intl.NumberFormat("es-MX",{style:"currency",currency:"MXN"}).format(n || 0);
+  }
+
+  async function fetchJSON(url){
+    const r = await fetch(url);
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    return r.json();
+  }
+
+  async function loadNewBadge(){
+    const { total } = await fetchJSON(`${API}/count-new`);
+    const badge = document.getElementById("newBadge");
+    document.getElementById("newCount").textContent = total;
+    badge.style.display = total > 0 ? "inline-flex" : "none";
+  }
+
+  async function loadOrdersByStatus(){
+    const data = await fetchJSON(`${API}/orders-by-status`);
+    const labels = data.map(x => x.status);
+    const values = data.map(x => x.total);
+
+    const ctx = document.getElementById("chartStatus").getContext("2d");
+    if(statusChart) statusChart.destroy();
+    statusChart = new Chart(ctx, {
+      type: "bar",
+      data: { labels, datasets: [{ label: "Pedidos", data: values }] },
+      options: { responsive:true, plugins:{ legend:{ display:false } } }
+    });
+  }
+
+  async function loadSales(group){
+    const res = await fetchJSON(`${API}/sales?group=${group}`);
+    const labels = res.data.map(x => x.label);
+    const values = res.data.map(x => x.total);
+    const orders = res.data.map(x => x.orders);
+
+    const totalSales = values.reduce((a,b)=>a+b,0);
+    const totalOrders = orders.reduce((a,b)=>a+b,0);
+
+    document.getElementById("salesTotal").textContent = money(totalSales);
+    document.getElementById("ordersTotal").textContent = totalOrders;
+
+    const ctx = document.getElementById("chartSales").getContext("2d");
+    if(salesChart) salesChart.destroy();
+    salesChart = new Chart(ctx, {
+      type: "line",
+      data: { labels, datasets: [{ label: "Ventas", data: values }] },
+      options: { responsive:true }
+    });
+  }
+
+  function setActive(group){
+    currentGroup = group;
+    document.getElementById("btnDay").classList.toggle("active", group==="day");
+    document.getElementById("btnMonth").classList.toggle("active", group==="month");
+    document.getElementById("btnYear").classList.toggle("active", group==="year");
+    loadSales(group);
+  }
+
+  document.getElementById("btnDay").onclick = ()=>setActive("day");
+  document.getElementById("btnMonth").onclick = ()=>setActive("month");
+  document.getElementById("btnYear").onclick = ()=>setActive("year");
+
+  // init
+  (async function(){
+    await loadNewBadge();
+    await loadOrdersByStatus();
+    await loadSales(currentGroup);
+
+    // refresco cada 10s: badge + status (opcional)
+    setInterval(loadNewBadge, 10000);
+  })();
+</script>
+</body>
+</html>

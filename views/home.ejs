@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Estilos principales -->
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="logo">
+        <!-- Si tienes logo, ponlo en /public/img/logo-calentanaco.png -->
+        <img src="/img/logo-calentanaco.png" alt="CalentanaCo" class="logo-img" />
+        <span>CalentanaCo</span>
+      </h1>
+      <nav class="nav">
+        <a href="/" class="nav-link active">Inicio</a>
+        <a href="#menu" class="nav-link">Menú</a>
+        <a href="#nosotros" class="nav-link">Nosotros</a>
+        <a href="#contacto" class="nav-link">Contacto</a>
+        <!-- El admin también inicia sesión desde /login -->
+        <a href="/login" class="nav-link nav-admin">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- HERO PRINCIPAL -->
+    <section class="hero">
+      <h2>Aguas frescas y botanas con sabor calentano 🖤</h2>
+      <p>
+        Bienvenida Jennifer. Esta es la primera vista de tu sistema <strong>CalentanaCo</strong>,
+        un negocio especializado en <strong>aguas frescas, botanas y antojitos</strong>.
+        Aquí vamos a ir construyendo el menú, el carrito de pedidos y el panel
+        para que el dueño pueda controlar todo desde su cel o computadora.
+      </p>
+      <a href="#menu" class="btn-primary">Ver menú de aguas y botanas</a>
+    </section>
+
+    <!-- SECCIÓN MENÚ (luego será dinámica con la BD) -->
+    <section id="menu" class="hero section-space">
+      <h2>Menú destacado</h2>
+      <p>
+        Más adelante, esta sección se llenará automáticamente con los productos
+        guardados en la base de datos: <strong>aguas frescas del día</strong>,
+        <strong>botanas</strong>, <strong>antojitos</strong> y todo lo que ofrezca CalentanaCo.
+      </p>
+      <p>
+        Por ahora es solo texto de ejemplo mientras diseñamos la estructura de la base
+        de datos y el panel de administración.
+      </p>
+    </section>
+
+    <!-- SECCIÓN VISIÓN / MISIÓN / FRASE MOTIVADORA -->
+    <section id="nosotros" class="hero section-space">
+      <h2>Nosotros</h2>
+
+      <div class="grid-two">
+        <div class="card">
+          <h3>Misión</h3>
+          <p>
+            Llevar a cada persona el auténtico sabor calentano a través de aguas frescas,
+            botanas y antojitos elaborados con calidad, tradición y cariño; ofreciendo
+            una experiencia cercana, rápida y accesible para todos.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Visión</h3>
+          <p>
+            Convertirnos en la marca líder de aguas frescas y botanas en la región,
+            reconocida por su sabor incomparable, su servicio humano y cercano, y por
+            la innovación constante en la experiencia del cliente tanto en tienda
+            como en plataformas digitales.
+          </p>
+        </div>
+      </div>
+
+      <div class="slogan">
+        <p class="slogan-text">
+          “El sabor que te abraza, la frescura que te inspira.”
+        </p>
+      </div>
+      <p class="note">
+        (Más adelante, estos textos se cargarán desde la base de datos para que el
+        administrador pueda cambiarlos desde su panel.)
+      </p>
+    </section>
+
+    <!-- SECCIÓN CONTACTO (básica por ahora) -->
+    <section id="contacto" class="hero section-space">
+      <h2>Contacto y horarios</h2>
+      <p>
+        Aquí después mostraremos la <strong>dirección del local</strong>,
+        <strong>horarios de apertura</strong> y botones para que los clientes
+        puedan escribir por <strong>WhatsApp</strong> o visitar tus redes sociales.
+      </p>
+      <p>
+        También podremos mostrar si el negocio está <strong>“Abierto”</strong> o
+        <strong>“Cerrado”</strong> según la hora configurada por el administrador.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> CalentanaCo · Sistema en desarrollo</p>
+  </footer>
+
+  <script>
+    // Año automático en el footer
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title || "Agregar producto - CalentanaCo" %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <h1 class="logo">
+      <img src="/img/logo-calentanaco.png" alt="CalentanaCo" class="logo-img" />
+      <span>CalentanaCo · Admin</span>
+    </h1>
+    <nav class="nav">
+      <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+      <a href="/admin/company" class="nav-link">Empresa</a>
+      <a href="/admin/products" class="nav-link active">Productos</a>
+      <a href="/" class="nav-link">Ver sitio</a>
+      <a href="/logout" class="nav-link nav-admin">Salir</a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <section class="hero">
+    <h2>Agregar producto</h2>
+
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+
+    <form class="form-auth" action="/admin/products/new" method="POST" enctype="multipart/form-data">
+
+      <label>
+        Nombre del producto
+        <input
+          id="name"
+          type="text"
+          name="name"
+          required
+          value="<%= values && values.name ? values.name : '' %>"
+        />
+      </label>
+
+      <label>
+        Descripción
+        <textarea
+          name="description"
+          rows="4"
+        ><%= values && values.description ? values.description : '' %></textarea>
+      </label>
+
+      <label>
+        Categoría
+        <select name="category" required>
+          <option value="aguas" <%= values && values.category === 'aguas' ? 'selected' : '' %>>Aguas frescas</option>
+          <option value="botanas" <%= values && values.category === 'botanas' ? 'selected' : '' %>>Botanas</option>
+          <option value="antojitos" <%= values && values.category === 'antojitos' ? 'selected' : '' %>>Antojitos</option>
+        </select>
+      </label>
+
+      <div class="card">
+        <h3 style="margin-bottom:8px;">Tamaños y precios (para aguas)</h3>
+
+        <p class="note" style="margin-bottom:10px;">
+          Ejemplo: 1/2 Litro $25 y 1 Litro $35.
+        </p>
+
+        <!-- enviamos sizes como arreglo: sizes[0][label], sizes[0][price] -->
+        <label>
+          Tamaño 1
+          <input type="text" name="sizes[0][label]" placeholder="1/2 Litro"
+            value="<%= values && values.sizes && values.sizes[0] && values.sizes[0].label ? values.sizes[0].label : '1/2 Litro' %>">
+        </label>
+
+        <label>
+          Precio 1
+          <input type="number" step="0.01" name="sizes[0][price]" placeholder="25"
+            value="<%= values && values.sizes && values.sizes[0] && values.sizes[0].price ? values.sizes[0].price : '25' %>">
+        </label>
+
+        <label>
+          Tamaño 2
+          <input type="text" name="sizes[1][label]" placeholder="1 Litro"
+            value="<%= values && values.sizes && values.sizes[1] && values.sizes[1].label ? values.sizes[1].label : '1 Litro' %>">
+        </label>
+
+        <label>
+          Precio 2
+          <input type="number" step="0.01" name="sizes[1][price]" placeholder="35"
+            value="<%= values && values.sizes && values.sizes[1] && values.sizes[1].price ? values.sizes[1].price : '35' %>">
+        </label>
+
+        <p class="note">Para botanas/antojitos puedes dejar estos tamaños o luego lo hacemos dinámico.</p>
+      </div>
+
+      <label>
+        Foto del producto (opcional)
+        <input type="file" name="image" accept=".jpg,.jpeg,.png,.webp" />
+        <span class="note">Formatos: JPG, PNG, WEBP. Máx 2MB.</span>
+      </label>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:8px;">
+        <a class="btn-secondary" href="/admin/products">← Volver</a>
+        <button class="btn-primary" type="submit">Guardar</button>
+      </div>
+    </form>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>© <%= new Date().getFullYear() %> CalentanaCo · Panel administrativo</p>
+</footer>
+
+</body>
+</html>

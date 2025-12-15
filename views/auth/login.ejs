@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="logo">
+        <img src="/img/logo-calentanaco.png" alt="CalentanaCo" class="logo-img" />
+        <span>CalentanaCo</span>
+      </h1>
+      <nav class="nav">
+        <a href="/" class="nav-link">Inicio</a>
+        <a href="/register" class="nav-link">Registrarse</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <h2>Iniciar sesión</h2>
+      <p>Puedes iniciar sesión como cliente o administrador.</p>
+
+      <% if (error) { %>
+        <p class="error"><%= error %></p>
+      <% } %>
+
+      <form action="/login" method="POST" class="form-auth">
+        <label>
+          Correo electrónico
+          <input type="email" name="email" required />
+        </label>
+
+        <label>
+          Contraseña
+          <input type="password" name="password" required />
+        </label>
+
+        <button type="submit" class="btn-primary">Entrar</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> CalentanaCo · Sistema en desarrollo</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

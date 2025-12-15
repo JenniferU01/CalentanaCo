@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <h1 class="logo">
+      <img src="/img/logo-calentanaco.png" class="logo-img" alt="CalentanaCo">
+      <span>CalentanaCo</span>
+    </h1>
+
+    <nav class="nav">
+      <a href="/menu" class="nav-link">Menú</a>
+      <a href="/cart" class="nav-link active">Carrito</a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <section class="hero">
+    <h2>Carrito</h2>
+
+    <% if (error) { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+
+    <% if (!cart || !cart.items || cart.items.length === 0) { %>
+      <p class="note">Tu carrito está vacío.</p>
+      <div class="section-space">
+        <a class="btn-primary" href="/menu">Volver al menú</a>
+      </div>
+    <% } %>
+  </section>
+
+  <% if (cart && cart.items && cart.items.length > 0) { %>
+    <section class="hero section-space">
+      <div class="cart-list">
+        <% cart.items.forEach(item => { %>
+          <article class="cart-item">
+            <div class="cart-imgwrap">
+              <% if (item.imageUrl) { %>
+                <img class="cart-img" src="<%= item.imageUrl %>" alt="<%= item.name %>">
+              <% } else { %>
+                <div class="no-image">Sin imagen</div>
+              <% } %>
+            </div>
+
+            <div class="cart-body">
+              <h3 class="cart-name"><%= item.name %></h3>
+
+              <p class="cart-meta">
+                Tamaño: <strong><%= item.sizeLabel || "Único" %></strong>
+              </p>
+
+              <p class="cart-meta">
+                Precio: <strong>$<%= Number(item.unitPrice).toFixed(2) %></strong>
+                · Cantidad: <strong><%= item.qty %></strong>
+              </p>
+
+              <p class="cart-subtotal">
+                Subtotal:
+                <strong>$<%= (Number(item.unitPrice) * Number(item.qty)).toFixed(2) %></strong>
+              </p>
+
+              <form action="/cart/remove" method="POST" class="inline-form">
+                <input type="hidden" name="key" value="<%= item.key %>">
+                <button type="submit" class="btn-danger">Quitar</button>
+              </form>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+
+      <div class="cart-summary">
+        <p class="cart-total">Total: <strong>$<%= Number(total).toFixed(2) %></strong></p>
+
+        <div class="cart-actions">
+          <a class="btn-secondary" href="/menu">Seguir comprando</a>
+
+          <form action="/cart/clear" method="POST" class="inline-form"
+                onsubmit="return confirm('¿Vaciar el carrito?');">
+            <button type="submit" class="btn-danger">Vaciar carrito</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHECKOUT -->
+    <section class="hero section-space">
+      <h2>Datos para tu pedido</h2>
+      <p class="note">Completa lo necesario. Al confirmar, se guardará el pedido y se abrirá WhatsApp.</p>
+
+      <form action="/checkout" method="POST" class="form-auth">
+
+        <label>
+          Tu nombre (opcional)
+          <input type="text" name="customerName" placeholder="Ej. Jennifer" />
+        </label>
+
+        <label>
+          Tu teléfono (opcional)
+          <input type="text" name="customerPhone" placeholder="Ej. 7671071891" />
+        </label>
+
+        <label>
+          Método de entrega
+          <select name="deliveryMethod" id="deliveryMethod">
+            <option value="domicilio">A domicilio</option>
+            <option value="recoger">Recoger en tienda</option>
+          </select>
+        </label>
+
+        <label id="addressBlock">
+          Dirección / referencias (si es a domicilio)
+          <textarea name="addressText" rows="3" placeholder="Calle, colonia, referencias..."></textarea>
+        </label>
+
+        <label id="mapsBlock">
+          Link de Google Maps (opcional)
+          <input type="text" name="mapsUrl" placeholder="https://maps.google.com/?q=..." />
+        </label>
+
+        <label>
+          Tiempo estimado (minutos)
+          <input type="number" name="etaMinutes" min="5" value="30" />
+        </label>
+
+        <label>
+          Método de pago
+          <select name="paymentMethod" id="paymentMethod">
+            <option value="efectivo">Efectivo</option>
+            <option value="transferencia">Transferencia</option>
+          </select>
+        </label>
+
+        <label id="cashBlock">
+          Si pagas con efectivo, ¿traes para cuánto? (opcional)
+          <input type="number" name="cashAmount" min="0" step="1" placeholder="Ej. 200" />
+        </label>
+
+        <% if (whatsappPhone) { %>
+          <button type="submit" class="btn-primary btn-full">
+            Confirmar pedido y enviar por WhatsApp
+          </button>
+        <% } else { %>
+          <p class="error">❌ Falta configurar el número de WhatsApp del negocio en .env</p>
+        <% } %>
+      </form>
+    </section>
+
+  <% } %>
+</main>
+
+<footer class="footer">
+  <p>© <%= new Date().getFullYear() %> CalentanaCo</p>
+</footer>
+
+<script>
+  const deliveryMethod = document.getElementById("deliveryMethod");
+  const paymentMethod = document.getElementById("paymentMethod");
+
+  const addressBlock = document.getElementById("addressBlock");
+  const mapsBlock = document.getElementById("mapsBlock");
+  const cashBlock = document.getElementById("cashBlock");
+
+  function updateUI() {
+    const delivery = deliveryMethod.value;
+    addressBlock.style.display = (delivery === "domicilio") ? "flex" : "none";
+    mapsBlock.style.display = (delivery === "domicilio") ? "flex" : "none";
+
+    const pay = paymentMethod.value;
+    cashBlock.style.display = (pay === "efectivo") ? "flex" : "none";
+  }
+
+  deliveryMethod.addEventListener("change", updateUI);
+  paymentMethod.addEventListener("change", updateUI);
+  updateUI();
+</script>
+
+</body>
+</html>

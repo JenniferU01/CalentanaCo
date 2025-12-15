@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <h1 class="logo">
+      <img src="/img/logo-calentanaco.png" class="logo-img" alt="CalentanaCo">
+      <span>CalentanaCo</span>
+    </h1>
+
+    <nav class="nav">
+      <a href="/menu" class="nav-link">Menú</a>
+      <a href="/cart" class="nav-link">Carrito</a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <section class="hero">
+    <h2>✅ Pedido creado</h2>
+    <p>Tu pedido se guardó correctamente en la base de datos.</p>
+
+    <% if (id) { %>
+      <p class="note">ID del pedido: <strong><%= id %></strong></p>
+    <% } %>
+
+    <% if (wa) { %>
+      <div class="section-space">
+        <a class="btn-primary btn-full" target="_blank" href="<%= wa %>">
+          Abrir WhatsApp y enviar pedido
+        </a>
+      </div>
+    <% } else { %>
+      <p class="error">No se generó el enlace de WhatsApp.</p>
+    <% } %>
+
+    <div class="section-space">
+      <a class="btn-secondary" href="/menu">Volver al menú</a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>© <%= new Date().getFullYear() %> CalentanaCo</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="logo">
+        <img src="/img/logo-calentanaco.png" alt="CalentanaCo" class="logo-img" />
+        <span>CalentanaCo · Admin</span>
+      </h1>
+      <nav class="nav">
+        <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+        <a href="/admin/company" class="nav-link active">Empresa</a>
+        <a href="/" class="nav-link">Ver sitio</a>
+        <a href="/logout" class="nav-link nav-admin">Salir</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <h2>Configuración de la empresa</h2>
+
+      <% if (success) { %>
+        <p class="success"><%= success %></p>
+      <% } %>
+
+      <% if (error) { %>
+        <p class="error"><%= error %></p>
+      <% } %>
+
+      <form action="/admin/company" method="POST" class="form-auth">
+        <label>
+          Nombre del negocio
+          <input
+            type="text"
+            name="name"
+            value="<%= info ? info.name : '' %>"
+            required
+          />
+        </label>
+
+        <label>
+          Misión
+          <textarea name="mission" rows="4" required><%= info ? info.mission : '' %></textarea>
+        </label>
+
+        <label>
+          Visión
+          <textarea name="vision" rows="4" required><%= info ? info.vision : '' %></textarea>
+        </label>
+
+        <label>
+          Frase motivadora / Slogan
+          <textarea name="slogan" rows="2" required><%= info ? info.slogan : '' %></textarea>
+        </label>
+
+        <button type="submit" class="btn-primary" style="margin-top: 10px;">
+          Guardar cambios
+        </button>
+      </form>
+      <p class="note" style="margin-top: 10px;">
+        Estos textos se mostrarán en la sección pública de “Nosotros” y en otras partes del sitio.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> CalentanaCo · Panel administrativo</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

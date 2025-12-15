@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="logo">
+        <img src="/img/logo-calentanaco.png" alt="CalentanaCo" class="logo-img" />
+        <span>CalentanaCo · Admin</span>
+      </h1>
+
+      <nav class="nav">
+        <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+        <a href="/admin/company" class="nav-link">Empresa</a>
+        <a href="/admin/products" class="nav-link">Productos</a>
+
+        <!-- ✅ Pedidos con badge rojo -->
+        <a href="/admin/orders" class="nav-link active" style="position:relative;">
+          Pedidos
+          <span
+            id="navNewBadge"
+            style="
+              display:none;
+              position:absolute;
+              top:-6px;
+              right:-10px;
+              background:#e11d48;
+              color:#fff;
+              border-radius:999px;
+              padding:2px 7px;
+              font-size:12px;
+              font-weight:800;
+              line-height:1;
+            "
+          >
+            0
+          </span>
+        </a>
+
+        <a href="/" class="nav-link">Ver sitio</a>
+        <a href="/logout" class="nav-link nav-admin">Salir</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <div class="admin-topbar">
+        <div>
+          <h2>Pedidos</h2>
+          <p class="note">Total: <strong><%= (orders && orders.length) ? orders.length : 0 %></strong></p>
+        </div>
+
+        <div class="orders-filters">
+          <button class="btn-secondary filter-btn" data-filter="all">Todos</button>
+          <button class="btn-secondary filter-btn" data-filter="nuevo">nuevo</button>
+          <button class="btn-secondary filter-btn" data-filter="en_proceso">en_proceso</button>
+          <button class="btn-secondary filter-btn" data-filter="listo">listo</button>
+          <button class="btn-secondary filter-btn" data-filter="entregado">entregado</button>
+          <button class="btn-secondary filter-btn" data-filter="cancelado">cancelado</button>
+        </div>
+      </div>
+
+      <% if (error) { %>
+        <div class="error"><%= error %></div>
+      <% } %>
+
+      <% if (!orders || orders.length === 0) { %>
+        <p class="note">Aún no hay pedidos.</p>
+      <% } else { %>
+        <div class="table-wrap section-space">
+          <table class="table" id="ordersTable">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Entrega</th>
+                <th>Pago</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <% orders.forEach(o => { %>
+                <tr class="order-row" data-status="<%= o.status %>">
+                  <td>
+                    <div><strong><%= new Date(o.createdAt).toLocaleString() %></strong></div>
+                    <div class="muted mono"><%= o._id %></div>
+                  </td>
+
+                  <td>
+                    <strong><%= o.customerName || "Sin nombre" %></strong><br/>
+                    <span class="muted"><%= o.customerPhone || "" %></span>
+                  </td>
+
+                  <td><%= o.deliveryMethod === "domicilio" ? "Domicilio" : "Recoger" %></td>
+                  <td><%= o.paymentMethod === "efectivo" ? "Efectivo" : "Transferencia" %></td>
+                  <td><strong>$<%= Number(o.total).toFixed(2) %></strong></td>
+
+                  <td>
+                    <span class="status-pill status-<%= o.status %>"><%= o.status %></span>
+                  </td>
+
+                  <td class="actions-cell">
+                    <a class="btn-secondary" href="/admin/orders/<%= o._id %>">Ver</a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <%= new Date().getFullYear() %> CalentanaCo · Panel administrativo</p>
+  </footer>
+
+  <script>
+    const btns = document.querySelectorAll(".filter-btn");
+    const rows = document.querySelectorAll(".order-row");
+
+    function setActive(btn) {
+      btns.forEach(b => b.classList.remove("is-active"));
+      btn.classList.add("is-active");
+    }
+
+    btns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const filter = btn.dataset.filter;
+        setActive(btn);
+
+        rows.forEach(row => {
+          const st = row.dataset.status;
+          row.style.display = (filter === "all" || st === filter) ? "" : "none";
+        });
+      });
+    });
+
+    // Activo por defecto: "Todos"
+    const first = document.querySelector('[data-filter="all"]');
+    if (first) first.classList.add("is-active");
+  </script>
+
+  <!-- ✅ Badge rojo: pedidos nuevos -->
+  <script>
+    (async function(){
+      try{
+        const badge = document.getElementById("navNewBadge");
+        if(!badge) return;
+
+        async function refresh(){
+          const r = await fetch("/api/dashboard/count-new");
+          const j = await r.json();
+          const total = j.total || 0;
+
+          badge.textContent = total;
+          badge.style.display = total > 0 ? "inline-block" : "none";
+        }
+
+        await refresh();
+        setInterval(refresh, 10000);
+      }catch(e){}
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/main.css" />
+
+  <style>
+    /* =========================
+       EXTRA: layout detalle
+    ========================= */
+    .detail-wrap{max-width:1100px;margin:0 auto;padding:18px}
+    .detail-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .detail-title{margin:0}
+    .detail-sub{margin:6px 0 0;color:#666}
+    .grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin-top:12px}
+    .panel{background:#fff;border-radius:14px;padding:14px;box-shadow:0 8px 20px rgba(0,0,0,.06)}
+    .row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 10px;font-weight:800;font-size:12px;background:#111;color:#fff}
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .meta .item{background:#f6f6f6;border-radius:12px;padding:10px}
+    .meta .k{font-size:12px;color:#666;margin:0 0 4px}
+    .meta .v{margin:0;font-weight:800}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .btn{border:0;border-radius:10px;padding:10px 12px;font-weight:800;cursor:pointer}
+    .btn-dark{background:#111;color:#fff}
+    .btn-gray{background:#e5e7eb;color:#111}
+    .btn-red{background:#e11d48;color:#fff}
+    .select{padding:10px 12px;border-radius:10px;border:1px solid #ddd;font-weight:800}
+    .hr{height:1px;background:#eee;margin:12px 0}
+    .list{margin:0;padding:0;list-style:none}
+    .list li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #eee}
+    .list li:last-child{border-bottom:0}
+    .muted{color:#666}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px}
+
+    /* =========================
+       "WhatsApp" view
+    ========================= */
+    .chat{display:flex;flex-direction:column;gap:10px}
+    .bubble{max-width:85%;padding:10px 12px;border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.06)}
+    .left{align-self:flex-start;background:#f3f4f6}
+    .right{align-self:flex-end;background:#111;color:#fff}
+    .bubble .who{font-weight:900;font-size:12px;opacity:.8;margin-bottom:6px}
+    .bubble .txt{margin:0;line-height:1.35}
+    .bubble .small{margin-top:6px;font-size:12px;opacity:.8}
+    .chat-items{margin:8px 0 0;padding-left:18px}
+    .chat-items li{margin:4px 0}
+
+    /* =========================
+       PRINT TICKET
+    ========================= */
+    @media print {
+      body { background:#fff !important; }
+      header, footer, .no-print { display:none !important; }
+      .print-area { display:block !important; }
+      .print-ticket {
+        width: 80mm;
+        margin: 0 auto;
+        font-family: ui-monospace, monospace;
+        color: #111;
+      }
+      .print-ticket h2 { margin:0 0 6px; font-size:16px; text-align:center; }
+      .print-ticket .line { border-top:1px dashed #aaa; margin:8px 0; }
+      .print-ticket .row { display:flex; justify-content:space-between; gap:10px; font-size:12px; }
+      .print-ticket .small { font-size:11px; color:#333; }
+    }
+    .print-area{display:none}
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="logo">
+        <img src="/img/logo-calentanaco.png" alt="CalentanaCo" class="logo-img" />
+        <span>CalentanaCo · Admin</span>
+      </h1>
+
+      <nav class="nav">
+        <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+        <a href="/admin/company" class="nav-link">Empresa</a>
+        <a href="/admin/products" class="nav-link">Productos</a>
+
+        <!-- ✅ Pedidos con badge rojo -->
+        <a href="/admin/orders" class="nav-link active" style="position:relative;">
+          Pedidos
+          <span
+            id="navNewBadge"
+            style="
+              display:none;
+              position:absolute;
+              top:-6px;
+              right:-10px;
+              background:#e11d48;
+              color:#fff;
+              border-radius:999px;
+              padding:2px 7px;
+              font-size:12px;
+              font-weight:800;
+              line-height:1;
+            "
+          >0</span>
+        </a>
+
+        <a href="/" class="nav-link">Ver sitio</a>
+        <a href="/logout" class="nav-link nav-admin">Salir</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <div class="detail-wrap">
+
+        <div class="detail-top">
+          <div>
+            <h2 class="detail-title">Detalle del pedido</h2>
+            <p class="detail-sub">
+              <span class="mono"><%= order ? order._id : "" %></span> ·
+              <span><%= order ? new Date(order.createdAt).toLocaleString() : "" %></span>
+            </p>
+          </div>
+
+          <div class="no-print">
+            <span class="pill">
+              Estado: <span style="text-transform:capitalize"><%= order.status %></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <!-- =========================
+               IZQUIERDA: Vista tipo WhatsApp
+          ========================= -->
+          <div class="panel">
+            <div class="row">
+              <h3 style="margin:0">Vista tipo WhatsApp</h3>
+              <a class="btn btn-gray no-print" href="/admin/orders">← Volver</a>
+            </div>
+
+            <div class="hr"></div>
+
+            <div class="chat">
+              <div class="bubble left">
+                <div class="who">👤 Cliente</div>
+                <p class="txt">
+                  Hola, soy <strong><%= order.customerName || "Sin nombre" %></strong>
+                  <% if (order.customerPhone) { %>
+                    (<%= order.customerPhone %>)
+                  <% } %>
+                  . Quiero hacer este pedido:
+                </p>
+
+                <ul class="chat-items">
+                  <% (order.items || []).forEach(it => { %>
+                    <li>
+                      <strong><%= it.qty %>×</strong>
+                      <%= it.name %>
+                      <% if (it.sizeLabel) { %> (<%= it.sizeLabel %>) <% } %>
+                      - $<%= Number(it.unitPrice).toFixed(2) %>
+                    </li>
+                  <% }) %>
+                </ul>
+
+                <p class="small">
+                  Total: <strong>$<%= Number(order.total).toFixed(2) %></strong>
+                </p>
+              </div>
+
+              <div class="bubble right">
+                <div class="who">🏪 CalentanaCo</div>
+                <p class="txt">
+                  Pedido recibido ✅
+                  <% if (order.deliveryMethod === "domicilio") { %>
+                    Te lo enviamos a domicilio.
+                  <% } else { %>
+                    Puedes pasar a recogerlo.
+                  <% } %>
+                </p>
+
+                <p class="small">
+                  Estado actual: <strong><%= order.status %></strong><br/>
+                  ETA: <strong><%= order.etaMinutes || 30 %> min</strong>
+                </p>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <h3 style="margin:0 0 10px">Productos</h3>
+            <ul class="list">
+              <% (order.items || []).forEach(it => { %>
+                <li>
+                  <div>
+                    <strong><%= it.name %></strong>
+                    <div class="muted">
+                      <% if (it.sizeLabel) { %> Tamaño: <strong><%= it.sizeLabel %></strong> · <% } %>
+                      Precio: $<%= Number(it.unitPrice).toFixed(2) %> ·
+                      Cant: <strong><%= it.qty %></strong>
+                    </div>
+                  </div>
+                  <div>
+                    <strong>
+                      $<%= (Number(it.unitPrice) * Number(it.qty)).toFixed(2) %>
+                    </strong>
+                  </div>
+                </li>
+              <% }) %>
+            </ul>
+
+            <div class="hr"></div>
+            <div class="row">
+              <div class="muted">Total</div>
+              <div style="font-size:18px;font-weight:900">
+                $<%= Number(order.total).toFixed(2) %>
+              </div>
+            </div>
+          </div>
+
+          <!-- =========================
+               DERECHA: Datos + acciones
+          ========================= -->
+          <div class="panel">
+            <div class="row">
+              <h3 style="margin:0">Acciones</h3>
+            </div>
+
+            <div class="actions no-print">
+              <button id="btnPrint" class="btn btn-dark" type="button">🖨️ Imprimir comanda</button>
+              <a class="btn btn-gray" href="/admin/orders">Ver lista</a>
+            </div>
+
+            <div class="hr"></div>
+
+            <form
+              class="no-print"
+              id="statusForm"
+              method="POST"
+              action="/admin/orders/<%= order._id %>/status"
+            >
+              <div class="row">
+                <div>
+                  <div class="muted" style="font-weight:800;margin-bottom:6px">Cambiar estado</div>
+                  <select name="status" id="statusSelect" class="select">
+                    <option value="nuevo" <%= order.status === "nuevo" ? "selected" : "" %>>nuevo</option>
+                    <option value="en_proceso" <%= order.status === "en_proceso" ? "selected" : "" %>>en_proceso</option>
+                    <option value="listo" <%= order.status === "listo" ? "selected" : "" %>>listo</option>
+                    <option value="entregado" <%= order.status === "entregado" ? "selected" : "" %>>entregado</option>
+                    <option value="cancelado" <%= order.status === "cancelado" ? "selected" : "" %>>cancelado</option>
+                  </select>
+                </div>
+
+                <button class="btn btn-red" type="submit">Guardar</button>
+              </div>
+              <p class="muted" style="margin:10px 0 0">
+                Se pedirá confirmación antes de cambiar el estado.
+              </p>
+            </form>
+
+            <div class="hr"></div>
+
+            <h3 style="margin:0">Datos del cliente</h3>
+            <div class="meta">
+              <div class="item">
+                <p class="k">Nombre</p>
+                <p class="v"><%= order.customerName || "Sin nombre" %></p>
+              </div>
+              <div class="item">
+                <p class="k">Teléfono</p>
+                <p class="v"><%= order.customerPhone || "—" %></p>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <h3 style="margin:0">Entrega</h3>
+            <div class="meta">
+              <div class="item">
+                <p class="k">Método</p>
+                <p class="v"><%= order.deliveryMethod === "domicilio" ? "Domicilio" : "Recoger" %></p>
+              </div>
+              <div class="item">
+                <p class="k">ETA (min)</p>
+                <p class="v"><%= order.etaMinutes || 30 %></p>
+              </div>
+              <div class="item" style="grid-column:1 / -1">
+                <p class="k">Dirección / referencias</p>
+                <p class="v"><%= order.addressText || "—" %></p>
+              </div>
+              <div class="item" style="grid-column:1 / -1">
+                <p class="k">Google Maps</p>
+                <% if (order.mapsUrl) { %>
+                  <p class="v"><a href="<%= order.mapsUrl %>" target="_blank" rel="noopener">Abrir ubicación</a></p>
+                <% } else { %>
+                  <p class="v">—</p>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <h3 style="margin:0">Pago</h3>
+            <div class="meta">
+              <div class="item">
+                <p class="k">Método</p>
+                <p class="v"><%= order.paymentMethod === "efectivo" ? "Efectivo" : "Transferencia" %></p>
+              </div>
+              <div class="item">
+                <p class="k">Efectivo para cambio</p>
+                <p class="v">$<%= Number(order.cashAmount || 0).toFixed(2) %></p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <%= new Date().getFullYear() %> CalentanaCo · Panel administrativo</p>
+  </footer>
+
+  <!-- =========================
+       PRINT AREA (TICKET)
+  ========================= -->
+  <div class="print-area">
+    <div class="print-ticket">
+      <h2>CALENTANACO</h2>
+      <div class="small" style="text-align:center">
+        COMANDA · <%= new Date(order.createdAt).toLocaleString() %>
+      </div>
+      <div class="small" style="text-align:center">
+        ID: <%= order._id %>
+      </div>
+
+      <div class="line"></div>
+
+      <div class="row"><span>Cliente</span><span><%= order.customerName || "Sin nombre" %></span></div>
+      <div class="row"><span>Tel</span><span><%= order.customerPhone || "—" %></span></div>
+
+      <div class="line"></div>
+
+      <% (order.items || []).forEach(it => { %>
+        <div class="row">
+          <span><%= it.qty %>x <%= it.name %> <% if (it.sizeLabel) { %>(<%= it.sizeLabel %>)<% } %></span>
+          <span>$<%= (Number(it.unitPrice) * Number(it.qty)).toFixed(2) %></span>
+        </div>
+      <% }) %>
+
+      <div class="line"></div>
+
+      <div class="row" style="font-weight:900">
+        <span>TOTAL</span>
+        <span>$<%= Number(order.total).toFixed(2) %></span>
+      </div>
+
+      <div class="line"></div>
+
+      <div class="small">
+        Entrega: <%= order.deliveryMethod === "domicilio" ? "Domicilio" : "Recoger" %><br/>
+        Pago: <%= order.paymentMethod === "efectivo" ? "Efectivo" : "Transferencia" %><br/>
+        ETA: <%= order.etaMinutes || 30 %> min
+      </div>
+
+      <% if (order.addressText) { %>
+        <div class="line"></div>
+        <div class="small">Dir: <%= order.addressText %></div>
+      <% } %>
+
+      <div class="line"></div>
+      <div class="small" style="text-align:center">Gracias por su compra</div>
+    </div>
+  </div>
+
+  <!-- =========================
+       Scripts
+  ========================= -->
+  <script>
+    // ✅ Confirmación cambio de estado
+    const form = document.getElementById("statusForm");
+    const sel = document.getElementById("statusSelect");
+    if(form && sel){
+      form.addEventListener("submit", (e) => {
+        const newStatus = sel.value;
+        const current = "<%= order.status %>";
+        if(newStatus !== current){
+          const ok = confirm(`¿Confirmar cambio de estado de "${current}" a "${newStatus}"?`);
+          if(!ok) e.preventDefault();
+        }
+      });
+    }
+
+    // ✅ Imprimir comanda
+    const btnPrint = document.getElementById("btnPrint");
+    if(btnPrint){
+      btnPrint.addEventListener("click", () => window.print());
+    }
+  </script>
+
+  <!-- ✅ Badge rojo: pedidos nuevos -->
+  <script>
+    (async function(){
+      try{
+        const badge = document.getElementById("navNewBadge");
+        if(!badge) return;
+
+        async function refresh(){
+          const r = await fetch("/api/dashboard/count-new");
+          const j = await r.json();
+          const total = j.total || 0;
+          badge.textContent = total;
+          badge.style.display = total > 0 ? "inline-block" : "none";
+        }
+
+        await refresh();
+        setInterval(refresh, 10000);
+      }catch(e){}
+    })();
+  </script>
+</body>
+</html>
